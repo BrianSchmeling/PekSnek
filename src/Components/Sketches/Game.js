@@ -8,6 +8,7 @@ const sketch = (p) => {
   const diff = 10;
 
   let verticalLines = [];
+  let horizontalLines = [];
 
   let xCor = [];
   let yCor = [];
@@ -48,6 +49,12 @@ const sketch = (p) => {
       verticalLines.map((line) => {
         p.fill(p.random(360), 100, 100);
         p.rect(line.startX, line.startY, 0, 50);
+      });
+    }
+    if (horizontalLines.length > 0) {
+      horizontalLines.map((line) => {
+        p.fill(p.random(360), 100, 100);
+        p.rect(line.startX, line.startY, 50, 0);
       });
     }
   };
@@ -138,6 +145,15 @@ const sketch = (p) => {
         return true;
       }
     }
+    for (let i = 0; i < horizontalLines.length; i++) {
+      if (
+        horizontalLines[i].startX == snakeHeadX &&
+        horizontalLines[i].startY < snakeHeadY &&
+        horizontalLines[i].startY > snakeHeadY - 50
+      ) {
+        return true;
+      }
+    }
   };
 
   /*
@@ -202,9 +218,16 @@ const sketch = (p) => {
         startY: lineHeight,
         startX: lineWidth,
       });
+    } else if (Math.floor(Math.random() * 10) == 9) {
+      let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
+      let lineHeight =
+        Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
+      horizontalLines.push({
+        startY: lineHeight,
+        startX: lineWidth,
+      });
     }
   };
-  console.log(verticalLines);
 };
 
 export default sketch;
