@@ -48,13 +48,13 @@ const sketch = (p) => {
     if (verticalLines.length > 0) {
       verticalLines.map((line) => {
         p.fill(p.random(360), 100, 100);
-        p.rect(line.startX, line.startY, 0, 50);
+        p.rect(line.startX, line.startY, 0, line.size);
       });
     }
     if (horizontalLines.length > 0) {
       horizontalLines.map((line) => {
         p.fill(p.random(360), 100, 100);
-        p.rect(line.startX, line.startY, 50, 0);
+        p.rect(line.startX, line.startY, line.size, 0);
       });
     }
   };
@@ -114,6 +114,7 @@ const sketch = (p) => {
       scoreElem.html("Game ended! Your score was : " + scoreVal);
       console.log("snakeHeadeX: " + xCor[xCor.length - 1]);
       console.log("snakeHeadeY: " + yCor[yCor.length - 1]);
+      console.log(horizontalLines);
     }
   };
 
@@ -147,10 +148,12 @@ const sketch = (p) => {
     }
     for (let i = 0; i < horizontalLines.length; i++) {
       if (
-        horizontalLines[i].startX == snakeHeadX &&
-        horizontalLines[i].startY < snakeHeadY &&
-        horizontalLines[i].startY > snakeHeadY - 50
+        horizontalLines[i].startY == snakeHeadY &&
+        horizontalLines[i].startX < snakeHeadX &&
+        horizontalLines[i].startX > snakeHeadX - 50
       ) {
+        console.log(snakeHeadY);
+        console.dir(horizontalLines[i], { depth: null });
         return true;
       }
     }
@@ -210,21 +213,26 @@ const sketch = (p) => {
   };
 
   const drawWall = () => {
-    if (Math.floor(Math.random() * 10) == 0) {
+    if (Math.floor(Math.random() * 50) == 0) {
       let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
       let lineHeight =
         Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
+      let size = Math.round(Math.floor(Math.random() * 100) / 10) * 10;
       verticalLines.push({
         startY: lineHeight,
         startX: lineWidth,
+        size: size,
       });
-    } else if (Math.floor(Math.random() * 10) == 9) {
+    } else if (Math.floor(Math.random() * 50) == 49) {
       let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
       let lineHeight =
         Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
+      let size = Math.round(Math.floor(Math.random() * 100) / 10) * 10;
+
       horizontalLines.push({
         startY: lineHeight,
         startX: lineWidth,
+        size: size,
       });
     }
   };
