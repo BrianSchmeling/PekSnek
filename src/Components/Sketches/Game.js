@@ -1,19 +1,4 @@
 const sketch = (p) => {
-  // let rotation = 0;
-
-  // p.setup = () => {
-  //   p.createCanvas(1000, 500);
-  // };
-
-  // p.draw = () => {
-  //   if (p.mouseIsPressed) {
-  //     p.fill(0);
-  //   } else {
-  //     p.fill(255);
-  //   }
-  //   p.ellipse(p.mouseX, p.mouseY, 80, 80);
-  // };
-
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
   let numSegments = 10;
   let direction = "right";
@@ -22,7 +7,7 @@ const sketch = (p) => {
   const yStart = 250; //starting y coordinate for snake
   const diff = 10;
 
-  let lines = [{ startHeight: 100, startWidth: 500 }];
+  let verticalLines = [];
 
   let xCor = [];
   let yCor = [];
@@ -58,11 +43,11 @@ const sketch = (p) => {
     checkGameStatus();
     checkForFruit();
     keyPressed();
-    // drawWall();
-    if (lines.length > 0) {
-      lines.map((line) => {
+    drawWall();
+    if (verticalLines.length > 0) {
+      verticalLines.map((line) => {
         p.fill(p.random(360), 100, 100);
-        p.rect(line.startWidth, line.startHeight, 0, 50);
+        p.rect(line.startX, line.startY, 0, 50);
       });
     }
   };
@@ -142,12 +127,14 @@ const sketch = (p) => {
   const checkWallCollision = () => {
     const snakeHeadX = xCor[xCor.length - 1];
     const snakeHeadY = yCor[yCor.length - 1];
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < verticalLines.length; i++) {
       if (
-        lines[i].startWidth == snakeHeadX &&
-        lines[i].startHeight < snakeHeadY &&
-        lines[i].startHeight > snakeHeadY - 50
+        verticalLines[i].startX == snakeHeadX &&
+        verticalLines[i].startY < snakeHeadY &&
+        verticalLines[i].startY > snakeHeadY - 50
       ) {
+        // console.log(verticalLines);
+        // console.log(snakeHeadX + ", " + snakeHeadY);
         return true;
       }
     }
@@ -206,17 +193,18 @@ const sketch = (p) => {
     }
   };
 
-  //   const drawWall = () => {
-  //     if (Math.floor(Math.random() * 100) == 0) {
-  //       let lineWidth = Math.floor(Math.random() * p.width);
-  //       let lineHeight = Math.floor(Math.random() * p.height);
-  //       lines.push({
-  //         startHeight: lineHeight,
-  //         startWidth: lineWidth,
-  //       });
-  //     }
-  //   };
-  console.log(lines);
+  const drawWall = () => {
+    if (Math.floor(Math.random() * 10) == 0) {
+      let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
+      let lineHeight =
+        Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
+      verticalLines.push({
+        startY: lineHeight,
+        startX: lineWidth,
+      });
+    }
+  };
+  console.log(verticalLines);
 };
 
 export default sketch;
