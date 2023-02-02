@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactP5Wrapper as P5Wrapper } from "react-p5-wrapper";
-import sketch from "../Sketch/Sketch";
+import sketch from "../Sketches/Game";
 import "./PekSnek.css";
 
 const PekSnek = () => {
