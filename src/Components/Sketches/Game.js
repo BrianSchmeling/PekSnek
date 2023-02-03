@@ -233,7 +233,17 @@ const sketch = (p) => {
           direction = "left";
         }
         break;
+      case 37:
+        if (direction !== "right") {
+          direction = "left";
+        }
+        break;
       case 76:
+        if (direction !== "left") {
+          direction = "right";
+        }
+        break;
+      case 39:
         if (direction !== "left") {
           direction = "right";
         }
@@ -243,7 +253,17 @@ const sketch = (p) => {
           direction = "up";
         }
         break;
+      case 38:
+        if (direction !== "down") {
+          direction = "up";
+        }
+        break;
       case 75:
+        if (direction !== "up") {
+          direction = "down";
+        }
+        break;
+      case 40:
         if (direction !== "up") {
           direction = "down";
         }
