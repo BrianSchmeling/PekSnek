@@ -2,16 +2,60 @@ const sketch = (p) => {
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
   let numSegments = 10;
   let direction = "right";
+  let alternate = true;
 
-  const xStart = 0; //starting x coordinate for snake
-  const yStart = 250; //starting y coordinate for snake
+  const xStart = 20; //starting x coordinate for snake
+  const yStart = 20; //starting y coordinate for snake
   const diff = 10;
 
-  let verticalLines = [];
-  let horizontalLines = [];
+  let verticalLines = [
+    { startY: 50, startX: 50, size: 150 },
+    { startY: 50, startX: 850, size: 100 },
+    { startY: 300, startX: 50, size: 150 },
+    { startY: 200, startX: 500, size: 200 },
+    { startY: 50, startX: 950, size: 200 }, //5
+    { startY: 100, startX: 100, size: 200 },
+    { startY: 0, startX: 800, size: 50 },
+    { startY: 0, startX: 450, size: 150 },
+    { startY: 350, startX: 650, size: 100 },
+    { startY: 350, startX: 250, size: 150 }, //10
+    { startY: 100, startX: 150, size: 100 },
+    { startY: 300, startX: 700, size: 100 },
+    { startY: 150, startX: 600, size: 250 },
+    { startY: 300, startX: 950, size: 50 },
+    { startY: 250, startX: 850, size: 50 }, //15
+  ];
+  let horizontalLines = [
+    { startY: 50, startX: 50, size: 250 },
+    { startY: 350, startX: 450, size: 50 },
+    { startY: 250, startX: 0, size: 200 },
+    { startY: 400, startX: 750, size: 250 },
+    { startY: 250, startX: 650, size: 200 }, //5
+    { startY: 450, startX: 900, size: 50 },
+    { startY: 450, startX: 800, size: 50 },
+    { startY: 350, startX: 350, size: 200 },
+    { startY: 50, startX: 550, size: 100 },
+    { startY: 50, startX: 700, size: 50 }, //10
+    { startY: 50, startX: 350, size: 50 },
+    { startY: 200, startX: 250, size: 300 },
+    { startY: 150, startX: 350, size: 200 },
+    { startY: 150, startX: 650, size: 150 },
+    { startY: 300, startX: 350, size: 100 }, //15
+  ];
+  const white = p.color(0, 0, 0);
+  const black = p.color(255, 255, 255);
+  const red = p.color(255, 0, 0);
+  const green = p.color(0, 255, 0);
+  const blue = p.color(0, 0, 255);
+  const colors = [white, black, red, green, blue];
 
   let xCor = [];
   let yCor = [];
+
+  let xBoost = 0;
+  let yBoost = 0;
+
+  let seconds = 3;
 
   let xFruit = 0;
   let yFruit = 0;
@@ -21,13 +65,13 @@ const sketch = (p) => {
     scoreElem = p.createDiv("Score = 0");
     scoreElem.position(20, 20);
     scoreElem.id = "score";
-    scoreElem.style("color", "white");
+    scoreElem.style("color", "black");
+    scoreElem.center("horizontal");
 
     p.createCanvas(1000, 500);
-    p.frameRate(15);
-    p.stroke(255);
-    p.strokeWeight(10);
+    p.frameRate(10);
     updateFruitCoordinates();
+    updateBoostCoordinates();
 
     for (let i = 0; i < numSegments; i++) {
       xCor.push(xStart + i * diff);
@@ -36,24 +80,29 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
-    p.background(0);
+    p.background(colors[0]);
     for (let i = 0; i < numSegments - 1; i++) {
+      p.stroke(colors[1]);
+      p.strokeWeight(10);
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     }
     updateSnakeCoordinates();
-    checkGameStatus();
+    // checkGameStatus();
     checkForFruit();
+    checkForBoost();
     keyPressed();
-    drawWall();
+    // drawWall();
     if (verticalLines.length > 0) {
       verticalLines.map((line) => {
-        p.fill(p.random(360), 100, 100);
+        p.stroke(colors[2]);
+        p.strokeWeight(10);
         p.rect(line.startX, line.startY, 0, line.size);
       });
     }
     if (horizontalLines.length > 0) {
       horizontalLines.map((line) => {
-        p.fill(p.random(360), 100, 100);
+        p.stroke(colors[2]);
+        p.strokeWeight(10);
         p.rect(line.startX, line.startY, line.size, 0);
       });
     }
@@ -112,9 +161,6 @@ const sketch = (p) => {
       p.noLoop();
       const scoreVal = parseInt(scoreElem.html().substring(8));
       scoreElem.html("Game ended! Your score was : " + scoreVal);
-      console.log("snakeHeadeX: " + xCor[xCor.length - 1]);
-      console.log("snakeHeadeY: " + yCor[yCor.length - 1]);
-      console.log(horizontalLines);
     }
   };
 
@@ -139,7 +185,7 @@ const sketch = (p) => {
       if (
         verticalLines[i].startX == snakeHeadX &&
         verticalLines[i].startY < snakeHeadY &&
-        verticalLines[i].startY > snakeHeadY - 50
+        verticalLines[i].startY > snakeHeadY - verticalLines[i].size
       ) {
         // console.log(verticalLines);
         // console.log(snakeHeadX + ", " + snakeHeadY);
@@ -150,10 +196,8 @@ const sketch = (p) => {
       if (
         horizontalLines[i].startY == snakeHeadY &&
         horizontalLines[i].startX < snakeHeadX &&
-        horizontalLines[i].startX > snakeHeadX - 50
+        horizontalLines[i].startX > snakeHeadX - horizontalLines[i].size
       ) {
-        console.log(snakeHeadY);
-        console.dir(horizontalLines[i], { depth: null });
         return true;
       }
     }
@@ -165,6 +209,7 @@ const sketch = (p) => {
  I add the last segment again at the tail, thereby extending the tail)
 */
   const checkForFruit = () => {
+    p.stroke(colors[3]);
     p.point(xFruit, yFruit);
     if (xCor[xCor.length - 1] === xFruit && yCor[yCor.length - 1] === yFruit) {
       const prevScore = parseInt(scoreElem.html().substring(8));
@@ -176,6 +221,15 @@ const sketch = (p) => {
     }
   };
 
+  const checkForBoost = () => {
+    p.strokeWeight(10);
+    p.stroke(colors[4]);
+    p.point(xBoost, yBoost);
+    p.strokeWeight(1);
+    p.noFill();
+    p.ellipse(xBoost, yBoost, 20);
+  };
+
   const updateFruitCoordinates = () => {
     /*
     The complex math logic is because I wanted the point to lie
@@ -185,6 +239,11 @@ const sketch = (p) => {
 
     xFruit = p.floor(p.random(10, (p.width - 100) / 10)) * 10;
     yFruit = p.floor(p.random(10, (p.height - 100) / 10)) * 10;
+  };
+
+  const updateBoostCoordinates = () => {
+    xBoost = p.floor(p.random(10, (p.width - 100) / 10)) * 10;
+    yBoost = p.floor(p.random(10, (p.height - 100) / 10)) * 10;
   };
 
   const keyPressed = () => {
@@ -213,28 +272,9 @@ const sketch = (p) => {
   };
 
   const drawWall = () => {
-    if (Math.floor(Math.random() * 50) == 0) {
-      let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
-      let lineHeight =
-        Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
-      let size = Math.round(Math.floor(Math.random() * 100) / 10) * 10;
-      verticalLines.push({
-        startY: lineHeight,
-        startX: lineWidth,
-        size: size,
-      });
-    } else if (Math.floor(Math.random() * 50) == 49) {
-      let lineWidth = Math.round(Math.floor(Math.random() * p.width) / 10) * 10;
-      let lineHeight =
-        Math.round(Math.floor(Math.random() * p.height) / 10) * 10;
-      let size = Math.round(Math.floor(Math.random() * 100) / 10) * 10;
-
-      horizontalLines.push({
-        startY: lineHeight,
-        startX: lineWidth,
-        size: size,
-      });
-    }
+    setTimeout(function () {
+      verticalLines.push({ startX: 100, startY: 100, size: 50 });
+    }, seconds * 1000);
   };
 };
 

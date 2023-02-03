@@ -5,6 +5,6 @@
 }
 
 .game-board {
-  border: 1px solid black;
+  border: 10px solid red;
   margin-top: 2rem;
 }
