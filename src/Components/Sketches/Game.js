@@ -1,77 +1,21 @@
+import vLines from "../../data/vLines.json";
+import hLines from "../../data/hLines.json";
+
 const sketch = (p) => {
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
   let numSegments = 10;
   let direction = "right";
-  let alternate = true;
+
+  const shuffledVLines = p.shuffle(vLines);
+  const shuffledHLines = p.shuffle(hLines);
 
   const xStart = 20; //starting x coordinate for snake
   const yStart = 20; //starting y coordinate for snake
   const diff = 10;
 
-  let verticalLines = [
-    { startY: 50, startX: 50, size: 150 },
-    { startY: 50, startX: 850, size: 100 },
-    { startY: 300, startX: 50, size: 150 },
-    { startY: 200, startX: 500, size: 200 },
-    { startY: 50, startX: 950, size: 200 }, //5
-    { startY: 100, startX: 100, size: 200 },
-    { startY: 0, startX: 800, size: 50 },
-    { startY: 0, startX: 450, size: 150 },
-    { startY: 350, startX: 650, size: 100 },
-    { startY: 350, startX: 250, size: 100 }, //10
-    { startY: 100, startX: 150, size: 100 },
-    { startY: 300, startX: 700, size: 100 },
-    { startY: 150, startX: 600, size: 250 },
-    { startY: 300, startX: 950, size: 50 },
-    { startY: 250, startX: 850, size: 50 }, //15
-    { startY: 250, startX: 350, size: 50 },
-    { startY: 250, startX: 450, size: 50 },
-    { startY: 200, startX: 400, size: 50 },
-    { startY: 50, startX: 500, size: 50 },
-    { startY: 100, startX: 550, size: 50 }, //20
-    { startY: 100, startX: 250, size: 50 },
-    { startY: 150, startX: 300, size: 50 },
-    { startY: 150, startX: 200, size: 150 },
-    { startY: 300, startX: 150, size: 150 },
-    { startY: 400, startX: 200, size: 100 }, //25
-    { startY: 250, startX: 550, size: 50 },
-    { startY: 0, startX: 900, size: 250 },
-    { startY: 450, startX: 750, size: 50 },
-    { startY: 400, startX: 100, size: 100 },
-    { startY: 50, startX: 650, size: 100 }, //30
-  ];
-  let horizontalLines = [
-    { startY: 50, startX: 50, size: 250 },
-    { startY: 350, startX: 450, size: 50 },
-    { startY: 250, startX: 0, size: 200 },
-    { startY: 400, startX: 750, size: 250 },
-    { startY: 250, startX: 650, size: 200 }, //5
-    { startY: 450, startX: 900, size: 50 },
-    { startY: 450, startX: 800, size: 50 },
-    { startY: 350, startX: 350, size: 200 },
-    { startY: 50, startX: 550, size: 100 },
-    { startY: 50, startX: 700, size: 50 }, //10
-    { startY: 50, startX: 350, size: 50 },
-    { startY: 200, startX: 250, size: 300 },
-    { startY: 150, startX: 350, size: 200 },
-    { startY: 150, startX: 650, size: 150 },
-    { startY: 300, startX: 300, size: 100 }, //15
-    { startY: 350, startX: 750, size: 150 },
-    { startY: 450, startX: 300, size: 400 },
-    { startY: 100, startX: 200, size: 200 },
-    { startY: 350, startX: 100, size: 200 },
-    { startY: 300, startX: 750, size: 50 }, //20
-    { startY: 200, startX: 600, size: 200 },
-    { startY: 250, startX: 250, size: 100 },
-    { startY: 300, startX: 200, size: 50 },
-    { startY: 400, startX: 300, size: 150 },
-    { startY: 400, startX: 550, size: 50 }, // 25
-    { startY: 100, startX: 700, size: 100 },
-    { startY: 300, startX: 900, size: 50 },
-    { startY: 300, startX: 600, size: 50 },
-    { startY: 100, startX: 550, size: 50 },
-    { startY: 200, startX: 850, size: 50 }, //30
-  ];
+  let verticalLines = [];
+  let horizontalLines = [];
+
   const white = p.color(0, 0, 0);
   const black = p.color(255, 255, 255);
   const red = p.color(255, 0, 0);
@@ -85,7 +29,11 @@ const sketch = (p) => {
   let xBoost = 0;
   let yBoost = 0;
 
-  let seconds = 3;
+  let seconds = 2;
+
+  let vCounter = 0;
+  let hCounter = 0;
+  let alternate = true;
 
   let xFruit = 0;
   let yFruit = 0;
@@ -121,7 +69,9 @@ const sketch = (p) => {
     checkForFruit();
     checkForBoost();
     keyPressed();
-    // drawWall();
+    if (p.frameCount % 10 === 0) {
+      drawWall();
+    }
     if (verticalLines.length > 0) {
       verticalLines.map((line) => {
         p.stroke(colors[2]);
@@ -302,9 +252,16 @@ const sketch = (p) => {
   };
 
   const drawWall = () => {
-    setTimeout(function () {
-      verticalLines.push({ startX: 100, startY: 100, size: 50 });
-    }, seconds * 1000);
+    if (alternate) {
+      // console.log(vLines[vCounter]);
+      verticalLines.push(shuffledVLines[vCounter]);
+      vCounter = vCounter + 1;
+      alternate = !alternate;
+    } else if (!alternate) {
+      horizontalLines.push(shuffledHLines[hCounter]);
+      hCounter = hCounter + 1;
+      alternate = !alternate;
+    }
   };
 };
 
