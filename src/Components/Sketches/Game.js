@@ -18,12 +18,27 @@ const sketch = (p) => {
     { startY: 0, startX: 800, size: 50 },
     { startY: 0, startX: 450, size: 150 },
     { startY: 350, startX: 650, size: 100 },
-    { startY: 350, startX: 250, size: 150 }, //10
+    { startY: 350, startX: 250, size: 100 }, //10
     { startY: 100, startX: 150, size: 100 },
     { startY: 300, startX: 700, size: 100 },
     { startY: 150, startX: 600, size: 250 },
     { startY: 300, startX: 950, size: 50 },
     { startY: 250, startX: 850, size: 50 }, //15
+    { startY: 250, startX: 350, size: 50 },
+    { startY: 250, startX: 450, size: 50 },
+    { startY: 200, startX: 400, size: 50 },
+    { startY: 50, startX: 500, size: 50 },
+    { startY: 100, startX: 550, size: 50 }, //20
+    { startY: 100, startX: 250, size: 50 },
+    { startY: 150, startX: 300, size: 50 },
+    { startY: 150, startX: 200, size: 150 },
+    { startY: 300, startX: 150, size: 150 },
+    { startY: 400, startX: 200, size: 100 }, //25
+    { startY: 250, startX: 550, size: 50 },
+    { startY: 0, startX: 900, size: 250 },
+    { startY: 450, startX: 750, size: 50 },
+    { startY: 400, startX: 100, size: 100 },
+    { startY: 50, startX: 650, size: 100 }, //30
   ];
   let horizontalLines = [
     { startY: 50, startX: 50, size: 250 },
@@ -40,7 +55,22 @@ const sketch = (p) => {
     { startY: 200, startX: 250, size: 300 },
     { startY: 150, startX: 350, size: 200 },
     { startY: 150, startX: 650, size: 150 },
-    { startY: 300, startX: 350, size: 100 }, //15
+    { startY: 300, startX: 300, size: 100 }, //15
+    { startY: 350, startX: 750, size: 150 },
+    { startY: 450, startX: 300, size: 400 },
+    { startY: 100, startX: 200, size: 200 },
+    { startY: 350, startX: 100, size: 200 },
+    { startY: 300, startX: 750, size: 50 }, //20
+    { startY: 200, startX: 600, size: 200 },
+    { startY: 250, startX: 250, size: 100 },
+    { startY: 300, startX: 200, size: 50 },
+    { startY: 400, startX: 300, size: 150 },
+    { startY: 400, startX: 550, size: 50 }, // 25
+    { startY: 100, startX: 700, size: 100 },
+    { startY: 300, startX: 900, size: 50 },
+    { startY: 300, startX: 600, size: 50 },
+    { startY: 100, startX: 550, size: 50 },
+    { startY: 200, startX: 850, size: 50 }, //30
   ];
   const white = p.color(0, 0, 0);
   const black = p.color(255, 255, 255);
@@ -87,7 +117,7 @@ const sketch = (p) => {
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     }
     updateSnakeCoordinates();
-    // checkGameStatus();
+    checkGameStatus();
     checkForFruit();
     checkForBoost();
     keyPressed();
