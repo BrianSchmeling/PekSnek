@@ -1,5 +1,6 @@
 import vLines from "../../data/vLines.json";
 import hLines from "../../data/hLines.json";
+import { createVariableDeclaration } from "typescript";
 
 const sketch = (p) => {
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
@@ -272,12 +273,12 @@ const sketch = (p) => {
   };
 
   const drawWall = () => {
-    if (alternate) {
+    if (alternate && verticalLines.length <= vCounter) {
       // console.log(vLines[vCounter]);
       verticalLines.push(shuffledVLines[vCounter]);
       vCounter = vCounter + 1;
       alternate = !alternate;
-    } else if (!alternate) {
+    } else if (!alternate && horizontalLines.length <= hCounter) {
       horizontalLines.push(shuffledHLines[hCounter]);
       hCounter = hCounter + 1;
       alternate = !alternate;
