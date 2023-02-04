@@ -1,54 +1,58 @@
-import vLines from "../../data/vLines.json";
+import vLines from "../../data/vLines.json"; // importing vertical walls
 import hLines from "../../data/hLines.json";
 
 let score = 0;
+let maxLength = 30;
 
 const sketch = (p) => {
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
   let numSegments = 10;
   let direction = "right";
 
-  const shuffledVLines = p.shuffle(vLines);
+  const shuffledVLines = p.shuffle(vLines); // randomizes the order of wall generation
   const shuffledHLines = p.shuffle(hLines);
 
   const xStart = 20; //starting x coordinate for snake
-  const yStart = 20; //starting y coordinate for snake
+  const yStart = 20;
   const diff = 10;
 
-  let verticalLines = [];
+  let verticalLines = []; // array to hold the walls as they appear on the map
   let horizontalLines = [];
 
   const white = p.color(0, 0, 0);
   const black = p.color(255, 255, 255);
   const red = p.color(255, 0, 0);
   const green = p.color(0, 255, 0);
-  const blue = p.color(0, 0, 255);
   const gray = p.color(20);
-  const colors = [white, black, red, green, blue, gray];
+  const colors = [white, black, red, green, gray];
 
-  let xCor = [];
+  const magenta = p.color(255, 0, 255);
+  const blue = p.color(0, 0, 255);
+  const boostColors = [blue, magenta];
+  let randomBoostColor;
+
+  let xCor = []; // holds the array the controls where the snake appears on the map
   let yCor = [];
 
-  let xBoost = 0;
+  let xBoost = 0; // location boost items will appear on the map
   let yBoost = 0;
 
-  let seconds = 2;
-
-  let vCounter = 0;
+  let vCounter = 0; // keeps track of how man walls have been built
   let hCounter = 0;
-  let alternate = true;
+  let alternate = true; // alternates betweens vertical and horizontal walls being build
 
-  let xFruit = 0;
+  let xFruit = 0; // location fruit will appear on the map
   let yFruit = 0;
   let loseMessage;
 
-  let scoreElem;
+  let scoreElem; // will hold a created <div> showing the score
 
   p.setup = () => {
     p.createCanvas(1000, 500);
     p.frameRate(10);
     updateFruitCoordinates();
-    updateBoostCoordinates();
+    randomBoostColor = Math.floor(Math.random() * boostColors.length); // random fruit location
+    updateBoostCoordinates(); // random boost location
 
     for (let i = 0; i < numSegments; i++) {
       xCor.push(xStart + i * diff);
@@ -60,30 +64,49 @@ const sketch = (p) => {
     drawScore();
 
     p.background(colors[0]);
+
+    // draws out an outline of where walls will eventually appear
     vLines.map((line) => {
-      p.stroke(colors[5]);
+      p.stroke(colors[4]);
       p.strokeWeight(10);
       p.rect(line.startX, line.startY, 0, line.size);
     });
     hLines.map((line) => {
-      p.stroke(colors[5]);
+      p.stroke(colors[4]);
       p.strokeWeight(10);
       p.rect(line.startX, line.startY, line.size, 0);
     });
+
+    // draws the snake
     for (let i = 0; i < numSegments - 1; i++) {
       p.stroke(colors[1]);
       p.strokeWeight(10);
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     }
+
     updateSnakeCoordinates();
-    checkGameStatus();
+    // checkGameStatus();
     checkForFruit();
     checkForBoost();
     keyPressed();
+
+    // controls the speed at which walls appear on the map, this is slightly longer than 1 second
     if (p.frameCount % 10 === 0) {
       drawWall();
     }
+
+    if (p.frameCount % 10 === 0 && xBoost === null) {
+      console.log("chance");
+      if (Math.floor(Math.random() * 60) === 0) {
+        console.log("taken");
+        randomBoostColor = Math.floor(Math.random() * boostColors.length);
+        updateBoostCoordinates();
+      }
+    }
+
+    //draws out the walls as they are pushed into the array that contains them
     if (verticalLines.length > 0) {
+      // console.log(verticalLines);
       verticalLines.map((line) => {
         p.stroke(colors[2]);
         p.strokeWeight(10);
@@ -99,6 +122,7 @@ const sketch = (p) => {
     }
   };
 
+  // every time your score increases, the div containing the score is removed, and a new one is drawn with the new score
   const drawScore = () => {
     p.removeElements();
     scoreElem = p.createDiv(`Score = ${score}`);
@@ -162,21 +186,16 @@ const sketch = (p) => {
       checkWallCollision()
     ) {
       p.noLoop();
-      // const scoreVal = parseInt(scoreElem.html().substring(8));
-      // scoreElem.html("Game ended! Your score was : " + scoreVal);
-      // message = "Game ended! Your score was: ";
+      // On game over, create a <div> that covers the gameboard
       loseMessage = p.createDiv(`Game Over! Your score was: ${score}`);
       loseMessage.position(20, 20);
       loseMessage.id = "score";
       loseMessage.style("background-color", "white");
-
       loseMessage.style("color", "black");
       loseMessage.style("font-size", "50px");
       loseMessage.style("padding-top", "15%");
-
       loseMessage.style("width", "100%");
       loseMessage.style("height", "100%");
-
       loseMessage.style("text-align", "center");
     }
   };
@@ -195,6 +214,7 @@ const sketch = (p) => {
     }
   };
 
+  //Checks if the head of the snake collides with any walls that have been drawn on the map
   const checkWallCollision = () => {
     const snakeHeadX = xCor[xCor.length - 1];
     const snakeHeadY = yCor[yCor.length - 1];
@@ -204,8 +224,6 @@ const sketch = (p) => {
         verticalLines[i].startY < snakeHeadY &&
         verticalLines[i].startY > snakeHeadY - verticalLines[i].size
       ) {
-        // console.log(verticalLines);
-        // console.log(snakeHeadX + ", " + snakeHeadY);
         return true;
       }
     }
@@ -229,8 +247,6 @@ const sketch = (p) => {
     p.stroke(colors[3]);
     p.point(xFruit, yFruit);
     if (xCor[xCor.length - 1] === xFruit && yCor[yCor.length - 1] === yFruit) {
-      // const prevScore = parseInt(scoreElem.html().substring(8));
-      // scoreElem.html("Score = " + (prevScore + 1));
       score = score + 1;
       xCor.unshift(xCor[0]);
       yCor.unshift(yCor[0]);
@@ -241,11 +257,23 @@ const sketch = (p) => {
 
   const checkForBoost = () => {
     p.strokeWeight(10);
-    p.stroke(colors[4]);
+    p.stroke(boostColors[randomBoostColor]);
     p.point(xBoost, yBoost);
     p.strokeWeight(1);
     p.noFill();
     p.ellipse(xBoost, yBoost, 20);
+    if (xCor[xCor.length - 1] === xBoost && yCor[yCor.length - 1] === yBoost) {
+      xCor.unshift(xCor[0]);
+      yCor.unshift(yCor[0]);
+      numSegments++;
+      xBoost = null;
+      yBoost = null;
+      if (randomBoostColor == 0) {
+        score = score + 1;
+      } else if (randomBoostColor == 1) {
+        score = score + 100;
+      }
+    }
   };
 
   const updateFruitCoordinates = () => {
@@ -310,12 +338,12 @@ const sketch = (p) => {
   };
 
   const drawWall = () => {
-    if (alternate && verticalLines.length <= vCounter) {
+    if (alternate && verticalLines.length < maxLength) {
       // console.log(vLines[vCounter]);
       verticalLines.push(shuffledVLines[vCounter]);
       vCounter = vCounter + 1;
       alternate = !alternate;
-    } else if (!alternate && horizontalLines.length <= hCounter) {
+    } else if (!alternate && horizontalLines.length < maxLength) {
       horizontalLines.push(shuffledHLines[hCounter]);
       hCounter = hCounter + 1;
       alternate = !alternate;
