@@ -6,5 +6,13 @@
 
 .game-board {
   border: 10px solid red;
+  margin-top: 7rem;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: center;
   margin-top: 2rem;
+  font-size: 4rem;
+  font-family: Palatino;
 }

@@ -1,6 +1,7 @@
 import vLines from "../../data/vLines.json";
 import hLines from "../../data/hLines.json";
-import { createVariableDeclaration } from "typescript";
+
+let score = 0;
 
 const sketch = (p) => {
   // the snake is divided into small segments, which are drawn and edited on each 'draw' call
@@ -22,7 +23,8 @@ const sketch = (p) => {
   const red = p.color(255, 0, 0);
   const green = p.color(0, 255, 0);
   const blue = p.color(0, 0, 255);
-  const colors = [white, black, red, green, blue];
+  const gray = p.color(20);
+  const colors = [white, black, red, green, blue, gray];
 
   let xCor = [];
   let yCor = [];
@@ -38,15 +40,11 @@ const sketch = (p) => {
 
   let xFruit = 0;
   let yFruit = 0;
+  let loseMessage;
+
   let scoreElem;
 
   p.setup = () => {
-    scoreElem = p.createDiv("Score = 0");
-    scoreElem.position(20, 20);
-    scoreElem.id = "score";
-    scoreElem.style("color", "black");
-    scoreElem.center("horizontal");
-
     p.createCanvas(1000, 500);
     p.frameRate(10);
     updateFruitCoordinates();
@@ -59,7 +57,19 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
+    drawScore();
+
     p.background(colors[0]);
+    vLines.map((line) => {
+      p.stroke(colors[5]);
+      p.strokeWeight(10);
+      p.rect(line.startX, line.startY, 0, line.size);
+    });
+    hLines.map((line) => {
+      p.stroke(colors[5]);
+      p.strokeWeight(10);
+      p.rect(line.startX, line.startY, line.size, 0);
+    });
     for (let i = 0; i < numSegments - 1; i++) {
       p.stroke(colors[1]);
       p.strokeWeight(10);
@@ -87,6 +97,18 @@ const sketch = (p) => {
         p.rect(line.startX, line.startY, line.size, 0);
       });
     }
+  };
+
+  const drawScore = () => {
+    p.removeElements();
+    scoreElem = p.createDiv(`Score = ${score}`);
+    scoreElem.position(20, 20);
+    scoreElem.id = "score";
+    scoreElem.style("color", "black");
+    scoreElem.style("font-size", "50px");
+    scoreElem.style("width", "50%");
+    scoreElem.style("text-align", "center");
+    scoreElem.style("margin-left", "25%");
   };
 
   /*
@@ -140,8 +162,22 @@ const sketch = (p) => {
       checkWallCollision()
     ) {
       p.noLoop();
-      const scoreVal = parseInt(scoreElem.html().substring(8));
-      scoreElem.html("Game ended! Your score was : " + scoreVal);
+      // const scoreVal = parseInt(scoreElem.html().substring(8));
+      // scoreElem.html("Game ended! Your score was : " + scoreVal);
+      // message = "Game ended! Your score was: ";
+      loseMessage = p.createDiv(`Game Over! Your score was: ${score}`);
+      loseMessage.position(20, 20);
+      loseMessage.id = "score";
+      loseMessage.style("background-color", "white");
+
+      loseMessage.style("color", "black");
+      loseMessage.style("font-size", "50px");
+      loseMessage.style("padding-top", "15%");
+
+      loseMessage.style("width", "100%");
+      loseMessage.style("height", "100%");
+
+      loseMessage.style("text-align", "center");
     }
   };
 
@@ -193,8 +229,9 @@ const sketch = (p) => {
     p.stroke(colors[3]);
     p.point(xFruit, yFruit);
     if (xCor[xCor.length - 1] === xFruit && yCor[yCor.length - 1] === yFruit) {
-      const prevScore = parseInt(scoreElem.html().substring(8));
-      scoreElem.html("Score = " + (prevScore + 1));
+      // const prevScore = parseInt(scoreElem.html().substring(8));
+      // scoreElem.html("Score = " + (prevScore + 1));
+      score = score + 1;
       xCor.unshift(xCor[0]);
       yCor.unshift(yCor[0]);
       numSegments++;
