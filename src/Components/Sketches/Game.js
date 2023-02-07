@@ -19,6 +19,8 @@ const sketch = (p) => {
   let verticalLines = []; // array to hold the walls as they appear on the map
   let horizontalLines = [];
 
+  let fruitLocations = [{ startY: 50, startX: 50 }];
+
   const white = p.color(0, 0, 0);
   const black = p.color(255, 255, 255);
   const red = p.color(255, 0, 0);
@@ -41,19 +43,18 @@ const sketch = (p) => {
   let hCounter = 0;
   let alternate = true; // alternates betweens vertical and horizontal walls being build
 
-  let xFruit = 0; // location fruit will appear on the map
-  let yFruit = 0;
+  let xFruit = null; // location fruit will appear on the map
+  let yFruit = null;
   let loseMessage;
 
   let scoreElem; // will hold a created <div> showing the score
 
   p.setup = () => {
     p.createCanvas(1000, 500);
-    p.frameRate(10);
-    updateFruitCoordinates();
+    p.frameRate(15);
+    // updateFruitCoordinates();
     randomBoostColor = Math.floor(Math.random() * boostColors.length); // random fruit location
     updateBoostCoordinates(); // random boost location
-
     for (let i = 0; i < numSegments; i++) {
       xCor.push(xStart + i * diff);
       yCor.push(yStart);
@@ -84,6 +85,10 @@ const sketch = (p) => {
       p.line(xCor[i], yCor[i], xCor[i + 1], yCor[i + 1]);
     }
 
+    if (xFruit === null) {
+      updateFruitCoordinates();
+    }
+
     updateSnakeCoordinates();
     // checkGameStatus();
     checkForFruit();
@@ -91,11 +96,11 @@ const sketch = (p) => {
     keyPressed();
 
     // controls the speed at which walls appear on the map, this is slightly longer than 1 second
-    if (p.frameCount % 10 === 0) {
+    if (p.frameCount % 15 === 0) {
       drawWall();
     }
 
-    if (p.frameCount % 10 === 0 && xBoost === null) {
+    if (p.frameCount % 15 === 0 && xBoost === null) {
       console.log("chance");
       if (Math.floor(Math.random() * 60) === 0) {
         console.log("taken");
@@ -106,7 +111,6 @@ const sketch = (p) => {
 
     //draws out the walls as they are pushed into the array that contains them
     if (verticalLines.length > 0) {
-      // console.log(verticalLines);
       verticalLines.map((line) => {
         p.stroke(colors[2]);
         p.strokeWeight(10);
@@ -251,7 +255,8 @@ const sketch = (p) => {
       xCor.unshift(xCor[0]);
       yCor.unshift(yCor[0]);
       numSegments++;
-      updateFruitCoordinates();
+      xFruit = null;
+      yFruit = null;
     }
   };
 
@@ -269,7 +274,7 @@ const sketch = (p) => {
       xBoost = null;
       yBoost = null;
       if (randomBoostColor == 0) {
-        score = score + 1;
+        score = score * 2;
       } else if (randomBoostColor == 1) {
         score = score + 100;
       }
@@ -283,8 +288,27 @@ const sketch = (p) => {
     number divisible by 10, since I move the snake in multiples of 10.
   */
 
-    xFruit = p.floor(p.random(10, (p.width - 100) / 10)) * 10;
-    yFruit = p.floor(p.random(10, (p.height - 100) / 10)) * 10;
+    let xPix = p.floor(p.random(10, (p.width - 100) / 10)) * 10;
+    let yPix = p.floor(p.random(10, (p.height - 100) / 10)) * 10;
+
+    let pixelColor = p.get(xPix, yPix);
+
+    if (
+      p.red(pixelColor) === 0 &&
+      p.blue(pixelColor) === 0 &&
+      p.green(pixelColor) === 0
+    ) {
+      xFruit = xPix;
+      yFruit = yPix;
+    } else {
+      console.log(pixelColor);
+    }
+    // console.log(xFruit);
+    // let widthColor = p.get(xFruit);
+    // // let heightColor = p.get(p.floor(p.random(10, (p.height - 100) / 10)) * 10);
+
+    // console.log(pixelColor);
+    // console.log(xFruit, yFruit);
   };
 
   const updateBoostCoordinates = () => {
