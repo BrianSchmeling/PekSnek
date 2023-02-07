@@ -24,13 +24,15 @@ const sketch = (p) => {
   const white = p.color(0, 0, 0);
   const black = p.color(255, 255, 255);
   const red = p.color(255, 0, 0);
-  const green = p.color(0, 255, 0);
+  const green = p.color(0, 128, 0);
   const gray = p.color(20);
   const colors = [white, black, red, green, gray];
 
   const magenta = p.color(255, 0, 255);
   const blue = p.color(0, 0, 255);
-  const boostColors = [blue, magenta];
+  const yellow = p.color(255, 255, 0);
+  const lime = p.color(0, 255, 0);
+  const boostColors = [blue, magenta, yellow, lime];
   let randomBoostColor;
 
   let xCor = []; // holds the array the controls where the snake appears on the map
@@ -46,12 +48,13 @@ const sketch = (p) => {
   let xFruit = null; // location fruit will appear on the map
   let yFruit = null;
   let loseMessage;
+  let speed = 10;
 
   let scoreElem; // will hold a created <div> showing the score
 
   p.setup = () => {
     p.createCanvas(1000, 500);
-    p.frameRate(15);
+    p.frameRate(speed);
     // updateFruitCoordinates();
     randomBoostColor = Math.floor(Math.random() * boostColors.length); // random fruit location
     updateBoostCoordinates(); // random boost location
@@ -274,9 +277,17 @@ const sketch = (p) => {
       xBoost = null;
       yBoost = null;
       if (randomBoostColor == 0) {
+        // blue
         score = score * 2;
       } else if (randomBoostColor == 1) {
+        // magenta
         score = score + 100;
+      } else if (randomBoostColor == 1) {
+        // yellow
+        speed = speed - 1;
+      } else if (randomBoostColor == 1) {
+        // lime
+        speed = speed + 1;
       }
     }
   };
